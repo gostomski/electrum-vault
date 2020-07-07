@@ -2299,6 +2299,9 @@ class TwoKeysWallet(Simple_Deterministic_Wallet):
         tx = self.db.get_transaction(tx_hash)
 
         if tx.tx_type in self.TX_TYPES_LIKE_STANDARD:
+            if tx.tx_type == TxType.ALERT_CONFIRMED:
+                # alert confirmed with icon like nonvault confirmed
+                status = self.TX_STATUS_INDEX_SHIFT - 1
             return status, status_str
 
         confirmations = tx_mined_info.conf

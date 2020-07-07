@@ -50,9 +50,27 @@ def history_status(h):
     if not h:
         return None
     status = ''
-    for tx_hash, height, *__ in h:
-        status += tx_hash + ':%d:' % height
+    for tx_hash, height, tx_type in h:
+        status += f'{tx_hash}:{height:d}:{tx_type:s}:'
     return bh2u(hashlib.sha256(status.encode('ascii')).digest())
+
+
+def filer_out_double_atxid_from_history(raw_history) -> list:
+    # descending sorting over transaction height
+    sorted_history = sorted(
+        raw_history,
+        key=lambda item: (item[0], int(item[1])),
+        reverse=True
+    )
+    history_with_unique_atxid = []
+    tx_ids = []
+    for item in sorted_history:
+        tx_hash = item[0]
+        if tx_hash in tx_ids:
+            continue
+        history_with_unique_atxid.append(item)
+        tx_ids.append(tx_hash)
+    return history_with_unique_atxid
 
 
 class SynchronizerBase(NetworkJobOnDefaultServer):
@@ -177,20 +195,21 @@ class Synchronizer(SynchronizerBase):
             item['height'],
             item.get('tx_type', TxType.NONVAULT.name)
         ), result))
+        filtered_history = filer_out_double_atxid_from_history(hist)
         # tx_fees
         tx_fees = [(item['tx_hash'], item.get('fee')) for item in result]
         tx_fees = dict(filter(lambda x:x[1] is not None, tx_fees))
         # Check that txids are unique
-        if len(hashes) != len(result):
+        if len(hashes) != len(filtered_history):
             self.logger.info(f"error: server history has non-unique txids: {addr}")
         # Check that the status corresponds to what was announced
         elif history_status(hist) != status:
             self.logger.info(f"error: status mismatch: {addr}")
         else:
             # Store received history
-            self.wallet.receive_history_callback(addr, hist, tx_fees)
+            self.wallet.receive_history_callback(addr, filtered_history, tx_fees)
             # Request transactions we don't have
-            await self._request_missing_txs(hist)
+            await self._request_missing_txs(filtered_history)
 
         # Remove request; this allows up_to_date to be True
         self.requested_histories.discard((addr, status))
