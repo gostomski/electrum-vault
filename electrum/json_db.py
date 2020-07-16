@@ -879,6 +879,7 @@ class JsonDB(Logger):
             self.tx_fees[tx_hash] = TxFeesValue(*tuple_)
 
         self._upgrade_tx_to_3keys_tx()
+        self._upgrade_verifier_by_tx_type()
 
     def _upgrade_tx_to_3keys_tx(self):
         """ Convert Transaction to ThreeKeysTransaction"""
@@ -895,6 +896,11 @@ class JsonDB(Logger):
                     three_keys_tx = ThreeKeysTransaction.from_tx(tx)
                     three_keys_tx.tx_type = tx_type
                     self.transactions[tx_hash] = three_keys_tx
+
+    def _upgrade_verifier_by_tx_type(self):
+        for key, value in self.verified_tx.items():
+            if len(value) == 4:
+                value.append(TxType.NONVAULT)
 
     @modifier
     def clear_history(self):

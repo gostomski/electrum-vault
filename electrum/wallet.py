@@ -547,7 +547,8 @@ class Abstract_Wallet(AddressSynchronizer):
 
     def get_frozen_balance(self):
         if not self.frozen_coins:  # shortcut
-            return self.get_balance(self.frozen_addresses)
+            c1, u1, x1, *__ = self.get_balance(self.frozen_addresses)
+            return c1, u1, x1
         c1, u1, x1, *__ = self.get_balance()
         c2, u2, x2, *__ = self.get_balance(excluded_addresses=self.frozen_addresses,
                                       excluded_coins=self.frozen_coins)
