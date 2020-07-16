@@ -78,11 +78,13 @@ class SPV(NetworkJobOnDefaultServer):
         unverified = self.wallet.get_unverified_txs()
 
         for item in unverified.items():
-            tx_hash, tx_height = item[:2]
+            tx_hash, tx_data = item
             # set NonVault tx_type if tx_type not exist in unverified items
             tx_type = TxType.NONVAULT
-            if len(item) == 3:
-                tx_type = item[3]
+            if len(tx_data) > 1:
+                tx_height, tx_type = tx_data
+            else:
+                tx_height = tx_data
             # do not request merkle branch if we already requested it
             if tx_hash in self.requested_merkle or tx_hash in self.merkle_roots:
                 continue
