@@ -81,7 +81,7 @@ class SPV(NetworkJobOnDefaultServer):
             tx_hash, tx_data = item
             # set NonVault tx_type if tx_type not exist in unverified items
             tx_type = TxType.NONVAULT
-            if len(tx_data) > 1:
+            if type(tx_data) is tuple:
                 tx_height, tx_type = tx_data
             else:
                 tx_height = tx_data
