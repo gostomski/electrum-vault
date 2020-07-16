@@ -264,7 +264,11 @@ class Synchronizer(SynchronizerBase):
         if tx_hash != tx.txid():
             raise SynchronizerFailure(f"received tx does not match expected txid ({tx_hash} != {tx.txid()})")
         tx_height = self.requested_tx.pop(tx_hash)
-        self.wallet.receive_tx_callback(tx_hash, tx, tx_height, tx_type=tx_type)
+        try:
+            self.wallet.receive_tx_callback(tx_hash, tx, tx_height, tx_type=tx_type)
+        except TypeError:
+            # use receive_tx_callback method without tx_type argument support
+            self.wallet.receive_tx_callback(tx_hash, tx, tx_height)
         self.logger.info(f"received tx {tx_hash} height: {tx_height} bytes: {len(raw_tx)}")
         # callbacks
         self.wallet.network.trigger_callback('new_transaction', self.wallet, tx)
