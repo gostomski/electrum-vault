@@ -15,8 +15,17 @@ class TwoKeysScriptGenerator(MultiKeyScriptGenerator):
         self.witness_flags = []
 
     def get_redeem_script(self, public_keys: List[str]) -> str:
-        if not isinstance(public_keys, list) or len(public_keys) != 1:
+        # todo modified error checking
+        if not isinstance(public_keys, list) or len(public_keys) not in [1, 2]:
             raise ThreeKeysError(f"Wrong input type! Expected list not '{public_keys}'")
+
+        if len(public_keys) == 2:
+            if self.recovery_pubkey not in public_keys:
+                raise ThreeKeysError('No pubkey in passed keys')
+            if self.recovery_pubkey == public_keys[0]:
+                del public_keys[0]
+            else:
+                del public_keys[1]
 
         pub_key = public_keys[0]
         return (
@@ -54,6 +63,11 @@ class TwoKeysScriptGenerator(MultiKeyScriptGenerator):
         self._recovery_alert_flag = opcodes.OP_0.hex()
         self.witness_flags = [0]
 
+    def is_recovery_mode(self):
+        return self.witness_flags == [0]
+
+    def is_alert_mode(self):
+        return self.witness_flags == [1]
 
 class ThreeKeysScriptGenerator(MultiKeyScriptGenerator):
     def __init__(self, recovery_pubkey: str, instant_pubkey: str):
