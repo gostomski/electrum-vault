@@ -1,4 +1,4 @@
-FROM ubuntu:18.04@sha256:5f4bdc3467537cbbe563e80db2c3ec95d548a9145d64453b06939c4592d67b6d
+FROM ubuntu:18.04
 
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
@@ -12,8 +12,8 @@ RUN dpkg --add-architecture i386 && \
         software-properties-common=0.96.24.32.1
 
 RUN apt-get update -q && \
-        apt-get install -qy \
-        git=1:2.17.1-1ubuntu0.4 \
+	apt-get install -fqy \
+        git \
         p7zip-full=16.02+dfsg-6 \
         make=4.1-9.1ubuntu1 \
         mingw-w64=5.0.3-1 \
