@@ -62,6 +62,7 @@ def get_lockfile(config: SimpleConfig):
 
 
 def remove_lockfile(lockfile):
+    os.close(lockfile)
     os.unlink(lockfile)
 
 
@@ -75,7 +76,8 @@ def get_file_descriptor(config: SimpleConfig):
     while True:
         try:
             return os.open(lockfile, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
-        except OSError:
+        except OSError as e:
+            print(e)
             pass
         try:
             request(config, 'ping')
@@ -348,6 +350,7 @@ class Daemon(Logger):
         await self.runner.setup()
         site = web.TCPSite(self.runner, self.host, self.port)
         await site.start()
+        print('fd: ' + str(fd))
         socket = site._server.sockets[0]
         os.write(fd, bytes(repr((socket.getsockname(), time.time())), 'utf8'))
         os.close(fd)
