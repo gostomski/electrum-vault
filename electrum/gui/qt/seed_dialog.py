@@ -56,13 +56,9 @@ def seed_warning_msg(seed):
 
 class SeedLayout(QVBoxLayout):
 
-    def seed_options(self):
-        dialog = QDialog()
-        vbox = QVBoxLayout(dialog)
-        if 'ext' in self.options:
-            cb_ext = QCheckBox(_('Extend this seed with custom words'))
-            cb_ext.setChecked(self.is_ext)
-            vbox.addWidget(cb_ext)
+    def seed_options(self, vbox):
+        hbox = QHBoxLayout()
+        # order matters when we align checkboxes to right
         if 'bip39' in self.options:
             def f(b):
                 self.is_seed = (lambda x: bool(x)) if b else self.saved_is_seed
@@ -82,10 +78,12 @@ class SeedLayout(QVBoxLayout):
             cb_bip39 = QCheckBox(_('BIP39 seed'))
             cb_bip39.toggled.connect(f)
             cb_bip39.setChecked(self.is_bip39)
-            vbox.addWidget(cb_bip39)
-        vbox.addLayout(Buttons(OkButton(dialog)))
-        if not dialog.exec_():
-            return None
+            hbox.addWidget(cb_bip39, alignment=Qt.AlignRight)
+        if 'ext' in self.options:
+            cb_ext = QCheckBox(_('Extend this seed with custom words'))
+            cb_ext.setChecked(self.is_ext)
+            hbox.addWidget(cb_ext, alignment=Qt.AlignRight)
+        vbox.addLayout(hbox)
         self.is_ext = cb_ext.isChecked() if 'ext' in self.options else False
         self.is_bip39 = cb_bip39.isChecked() if 'bip39' in self.options else False
 
@@ -122,18 +120,18 @@ class SeedLayout(QVBoxLayout):
             hbox.addWidget(logo)
         hbox.addWidget(self.seed_e)
         self.addLayout(hbox)
-        hbox = QHBoxLayout()
-        hbox.addStretch(1)
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
         self.seed_type_label = QLabel('')
-        hbox.addWidget(self.seed_type_label)
+        vbox.addWidget(self.seed_type_label, alignment=Qt.AlignRight)
+        self.seed_type_label.setVisible(False)
 
         # options
         self.is_bip39 = False
         self.is_ext = False
         if options:
-            opt_button = EnterButton(_('Options'), self.seed_options)
-            hbox.addWidget(opt_button)
-            self.addLayout(hbox)
+            self.seed_options(vbox)
+            self.addLayout(vbox)
         if passphrase:
             hbox = QHBoxLayout()
             passphrase_e = QLineEdit()
@@ -186,6 +184,10 @@ class SeedLayout(QVBoxLayout):
             is_checksum, is_wordlist = bip39_is_checksum_valid(s)
             status = ('checksum: ' + ('ok' if is_checksum else 'failed')) if is_wordlist else 'unknown wordlist'
             label = 'BIP39' + ' (%s)'%status
+        if s and label:
+            self.seed_type_label.setVisible(True)
+        else:
+            self.seed_type_label.setVisible(False)
         self.seed_type_label.setText(label)
         self.parent.next_button.setEnabled(b)
 

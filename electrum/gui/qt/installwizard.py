@@ -583,7 +583,13 @@ class InstallWizard(QDialog, MessageBoxMixin, BaseWizard):
             "entropy": entropy,
         }
         layout = Qr2FaDialog(self, title_label=title_label, pin_label=pin_label, qr_data=qr_data)
-        self.exec_layout(layout, _('Pair your wallet with GoldWallet'), next_enabled=False)
+        if self.wallet_type == '2-key':
+            title = _('Pair your 2 Keys Vault wallet with Gold Wallet')
+        elif self.wallet_type == '3-key':
+            title = _('Pair your 3 Keys Vault wallet with Gold Wallet')
+        else:
+            raise ValueError(f'Wrong wallet type {self.wallet_type}')
+        self.exec_layout(layout, title, next_enabled=False)
         return layout.get_pubkey()
 
     def query_choice(self, msg, choices):
