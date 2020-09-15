@@ -56,8 +56,8 @@ def seed_warning_msg(seed):
 
 class SeedLayout(QVBoxLayout):
 
-    def seed_options(self, vbox):
-        hbox = QHBoxLayout()
+    def seed_options(self):
+        vbox = QVBoxLayout()
         # order matters when we align checkboxes to right
         if 'bip39' in self.options:
             def f(b):
@@ -68,27 +68,25 @@ class SeedLayout(QVBoxLayout):
                     msg = ' '.join([
                         '<b>' + _('Warning') + ':</b>  ',
                         _('BIP39 seeds can be imported in Electrum, so that users can access funds locked in other wallets.'),
-                        _('However, we do not generate BIP39 seeds, because they do not meet our safety standard.'),
-                        _('BIP39 seeds do not include a version number, which compromises compatibility with future software.'),
                         _('We do not guarantee that BIP39 imports will always be supported in Electrum.'),
                     ])
                 else:
                     msg = ''
                 self.seed_warning.setText(msg)
-            cb_bip39 = QCheckBox(_('BIP39 seed'))
+            cb_bip39 = QCheckBox(_('BIP39 seed (Gold Wallet integration)'))
             cb_bip39.toggled.connect(f)
             cb_bip39.setChecked(self.is_bip39)
-            hbox.addWidget(cb_bip39, alignment=Qt.AlignRight)
+            vbox.addWidget(cb_bip39, alignment=Qt.AlignLeft)
         if 'ext' in self.options:
             cb_ext = QCheckBox(_('Extend this seed with custom words'))
             cb_ext.setChecked(self.is_ext)
-            hbox.addWidget(cb_ext, alignment=Qt.AlignRight)
-        vbox.addLayout(hbox)
+            vbox.addWidget(cb_ext, alignment=Qt.AlignLeft)
+        self.addLayout(vbox)
         self.is_ext = cb_ext.isChecked() if 'ext' in self.options else False
         self.is_bip39 = cb_bip39.isChecked() if 'bip39' in self.options else False
 
     def __init__(self, seed=None, title=None, icon=True, msg=None, options=None,
-                 is_seed=None, passphrase=None, parent=None, for_seed_words=True):
+                 is_seed=None, passphrase=None, parent=None, for_seed_words=True, import_gold_wallet=False):
         QVBoxLayout.__init__(self)
         self.parent = parent
         self.options = options
@@ -112,26 +110,25 @@ class SeedLayout(QVBoxLayout):
 
         self.seed_e.setMaximumHeight(75)
         hbox = QHBoxLayout()
+        hbox.addWidget(self.seed_e)
         if icon:
             logo = QLabel()
             logo.setPixmap(QPixmap(icon_path("seed.png"))
                            .scaledToWidth(64, mode=Qt.SmoothTransformation))
             logo.setMaximumWidth(60)
             hbox.addWidget(logo)
-        hbox.addWidget(self.seed_e)
+
         self.addLayout(hbox)
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        self.seed_type_label = QLabel('')
-        vbox.addWidget(self.seed_type_label, alignment=Qt.AlignRight)
-        self.seed_type_label.setVisible(False)
+        self.seed_warning = WWLabel('')
 
         # options
         self.is_bip39 = False
         self.is_ext = False
+        if import_gold_wallet:
+            self.is_bip39 = True
+        self.import_gold_wallet = import_gold_wallet
         if options:
-            self.seed_options(vbox)
-            self.addLayout(vbox)
+            self.seed_options()
         if passphrase:
             hbox = QHBoxLayout()
             passphrase_e = QLineEdit()
@@ -141,7 +138,6 @@ class SeedLayout(QVBoxLayout):
             hbox.addWidget(passphrase_e)
             self.addLayout(hbox)
         self.addStretch(1)
-        self.seed_warning = WWLabel('')
         if msg:
             self.seed_warning.setText(seed_warning_msg(seed))
         self.addWidget(self.seed_warning)
@@ -176,19 +172,6 @@ class SeedLayout(QVBoxLayout):
     def on_edit(self):
         s = self.get_seed()
         b = self.is_seed(s)
-        if not self.is_bip39:
-            t = seed_type(s)
-            label = _('Seed Type') + ': ' + t if t else ''
-        else:
-            from electrum.keystore import bip39_is_checksum_valid
-            is_checksum, is_wordlist = bip39_is_checksum_valid(s)
-            status = ('checksum: ' + ('ok' if is_checksum else 'failed')) if is_wordlist else 'unknown wordlist'
-            label = 'BIP39' + ' (%s)'%status
-        if s and label:
-            self.seed_type_label.setVisible(True)
-        else:
-            self.seed_type_label.setVisible(False)
-        self.seed_type_label.setText(label)
         self.parent.next_button.setEnabled(b)
 
         # disable suggestions if user already typed an unknown word
