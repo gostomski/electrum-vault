@@ -8,6 +8,7 @@ def GitUrl = 'https://github.com/gostomski/'+project+'.git'
 def gitCredentials ='jenkins-bitbucket-ssh'
 def file_extension= '.txt'
 def already_released_version=false
+def force_release = false
 
 node('local-docker') {
     def app
