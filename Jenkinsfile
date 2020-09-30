@@ -2,7 +2,7 @@ pipeline {
     agent {
         dockerfile {
             filename 'Dockerfile'
-            label 'my-defined-label'
+            label 'docker' 
             dir 'contrib/build-linux/appimage'
             args '-v $PWD:/opt/electrum'
         }
@@ -11,6 +11,13 @@ pipeline {
 
    stages {
         stage('Build') {
+          agent {
+                docker {
+                filename 'Dockerfile'
+                label 'docker' 
+                dir 'contrib/build-linux/appimage'
+                args '-v $PWD:/opt/electrum'
+                }
             steps {
                 withEnv(["HOME=${env.WORKSPACE}"]) {
                     sh './build.sh'
