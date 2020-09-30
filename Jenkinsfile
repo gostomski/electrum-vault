@@ -1,28 +1,23 @@
-def awsCredentials = [[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 's3_access']]
-
 pipeline {
-   agent { docker { image 'python:3.6' } }
+    agent {
+        dockerfile {
+            dir 'contrib/build-linux/appimage'
+        }
+    }    
+
 
    stages {
-        stage('Build environment') {
+         stage('Initialize')  {         
+            def dockerHome = tool 'myDocker'
+            env.PATH = "${dockerHome}/bin:${env.PATH}"     
+         } 
+         stage('Build') {
             steps {
                 withEnv(["HOME=${env.WORKSPACE}"]) {
-                    sh 'pip install -r requirements.txt --user'
+                    sh './build.sh'
                 }
             }
         }
-        stage('Test') {
-            steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 's3_access', variable: 'AWS_ACCESS_KEY_ID']]) {
-                 withEnv(["HOME=${env.WORKSPACE}"]) {
-                     
-                    sh "echo this is ${env.AWS_ACCESS_KEY_ID}"
-                    sh 'AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} AWS_DEFAULT_REGION=us-east-1'
-                    sh 'python -m pytest --variables variabes.yaml test_cf_ota.py'
-                 }
-                }     
-
-            }
-        }        
    }
 }
+
