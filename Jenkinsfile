@@ -58,11 +58,11 @@ node('local-docker') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
-/*        app.inside {
+        app.inside {
             sh 'pwd'
             sh 'ls -la'
             sh 'cd contrib/build-linux/appimage && ./build.sh'
-        }*/
+        }
         tag = sh(script: "git describe --tags",returnStdout:true,).trim()
         //echo tag
         sh "echo $project,$version,$branch,$shortCommit"
