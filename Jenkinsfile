@@ -20,6 +20,9 @@ node('local-docker') {
 
         app.inside {
             sh 'pwd'
+            sh 'ls -la'
+            sh 'cd build-linux/appimage'
+            sh './build.sh'
         }
 /*        app.inside("-w /opt/electrum/contrib/build-linux/appimage") {
             sh 'cd /opt/electrum/contrib/build-linux/appimage && ./build.sh'
