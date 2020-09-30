@@ -75,7 +75,7 @@ node('local-docker') {
         sh "echo $project,$version,$branch,$shortCommit > $project-$branch-latest.txt"
         sh "cat $project-$branch-latest.txt"
         
-        nexusArtifactUploader artifacts: [[artifactId: "${project}-${branch}", classifier: '', file: "$project-$branch-latest.txt", type: "txt"]], credentialsId: 'jenkins-rw-nexus', groupId: 'Global', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
+        nexusArtifactUploader artifacts: [[artifactId: "${project}-${branch}", classifier: '', file: "${project}-${branch}-latest.txt", type: "txt"]], cresdentialsId: 'jenkins-rw-nexus', groupId: 'Global', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
     cleanWs();
      }
     }
