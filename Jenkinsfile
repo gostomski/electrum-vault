@@ -19,7 +19,10 @@ node('local-docker') {
          * For this example, we're using a Volkswagen-type approach ;-) */
 
         app.inside {
-            sh './build.sh'
+            sh '-w /opt/electrum/contrib/build-linux/appimage pwd'
+        }
+        app.inside {
+            sh 'cd /opt/electrum/contrib/build-linux/appimage && ./build.sh'
         }
         sh 'ls -a dist/'
     }
