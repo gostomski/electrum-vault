@@ -27,7 +27,7 @@ node('local-docker') {
       echo shortCommit
       //get recently release commit id
       if (force_release == 'false'){
-        sh "wget --no-check-certificate https://${nexus_url}/repository/miningcityv2/Global/$project-$branch/$version/$project-$branch-$version$file_extension -O version.txt"
+        sh "wget --no-check-certificate https://${nexus_url}/repository/miningcityv2/Global/$project-$prefix_branch/$version/$project-$prefix_branch-$version$file_extension -O version.txt"
         last_commitid = sh(script: "cat version.txt | cut -f 4 -d ,",returnStdout:true,).trim()
         echo "Compare latest released commit $last_commitid to current commit id $shortCommit is ok"
         if (last_commitid != shortCommit){
@@ -59,19 +59,19 @@ node('local-docker') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
-/*        app.inside {
+        app.inside {
             sh 'pwd'
             sh 'ls -la'
             sh 'cd contrib/build-linux/appimage && ./build.sh'
-        }*/
+        }
         tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()      
-        echo prefix_branch
-        //nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
+        //echo prefix_branch
+        nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
         
 
         //add information about git
-        sh "echo $project,$version,$branch,$shortCommit > $project-$branch-latest.txt"
-        //nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "${project}-${branch}-latest.txt", type: "txt"]], credentialsId: 'jenkins-rw-nexus', groupId: 'Global', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
+        sh "echo $project,$version,$prefix_branch,$shortCommit > $project-$prefix_branch-latest.txt"
+        nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "${project}-${prefix_branch}-latest.txt", type: "txt"]], credentialsId: 'jenkins-rw-nexus', groupId: 'Global', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
      cleanWs();
      }
     }
