@@ -56,11 +56,11 @@ node('local-docker') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
-        app.inside {
+/*        app.inside {
             sh 'pwd'
             sh 'ls -la'
             sh 'cd contrib/build-linux/appimage && ./build.sh'
-        }
+        }*/
         tag = sh(script: "git describe --tags",returnStdout:true,).trim()
 
         //nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
