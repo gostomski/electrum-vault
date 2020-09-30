@@ -11,7 +11,7 @@ node('local-docker') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
 
-        app = docker.build("contrib/build-linux/appimage")
+        app = docker.build("electrum-appimage-builder-cont","./contrib/build-linux/appimage")
     }
 
     stage('Test image') {
