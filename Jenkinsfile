@@ -15,6 +15,8 @@ node('local-docker') {
     }
 
     stage('Build binary') {
+         withEnv(["GIT_COMMITTER_NAME=test", "GIT_COMMITTER_EMAIL=test"]) {
+   
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
@@ -23,10 +25,8 @@ node('local-docker') {
             sh 'ls -la'
             sh 'cd contrib/build-linux/appimage && ./build.sh'
         }
-/*        app.inside("-w /opt/electrum/contrib/build-linux/appimage") {
-            sh 'cd /opt/electrum/contrib/build-linux/appimage && ./build.sh'
-        }
-*/        sh 'ls -a dist/'
+        sh 'ls -a dist/'
+     }
     }
 
 }
