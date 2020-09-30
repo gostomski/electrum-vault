@@ -18,6 +18,7 @@ pipeline {
                 dir 'contrib/build-linux/appimage'
                 args '-v $PWD:/opt/electrum'
                 }
+            }
             steps {
                 withEnv(["HOME=${env.WORKSPACE}"]) {
                     sh './build.sh'
