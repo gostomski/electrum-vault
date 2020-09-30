@@ -18,7 +18,7 @@ node('local-docker') {
 
     stage('Clone repository') {
         /* Let's make sure we have the repository cloned to our workspace */
-        checkout scm
+        git url: GitUrl, branch: git_branch, credentialsId: gitCredentials
     }
 
     stage('Check last commit'){
