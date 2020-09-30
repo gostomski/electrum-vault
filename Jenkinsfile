@@ -4,7 +4,7 @@ def last_commitid = ''
 def project = 'electrum-vault'
 def project_type = 'python'
 def project_ext = 'bin'
-//def git_branch = branch
+def git_branch = branch
 def shortCommit = ''
 def GitUrl = 'https://github.com/gostomski/'+project+'.git'
 def gitCredentials ='jenkins-bitbucket-ssh'
@@ -64,7 +64,7 @@ node('local-docker') {
             sh 'cd contrib/build-linux/appimage && ./build.sh'
         }
         tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()
-        //echo tag
+        echo tag
         sh "echo $project,$version,$branch,$shortCommit"
         nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
         //nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "contrib/build-linux/README.md", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
