@@ -1,3 +1,5 @@
+def awsCredentials = [[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 's3_access']]
+
 pipeline {
    agent { docker { image 'python:3.6' } }
 
