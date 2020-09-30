@@ -18,13 +18,13 @@ node('local-docker') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
-        app.inside("-w /opt/electrum/contrib/build-linux/appimage") {
+        app.inside {
             sh 'pwd'
         }
-        app.inside {
+/*        app.inside("-w /opt/electrum/contrib/build-linux/appimage") {
             sh 'cd /opt/electrum/contrib/build-linux/appimage && ./build.sh'
         }
-        sh 'ls -a dist/'
+*/        sh 'ls -a dist/'
     }
 
 }
