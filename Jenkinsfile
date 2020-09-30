@@ -1,7 +1,7 @@
 def last_commitid = ''
 def project = 'electrum-vault'
 def project_type = 'python'
-def project_ext = 'zip'
+def project_ext = ''
 //def git_branch = branch
 def shortCommit = ''
 def GitUrl = 'https://github.com/gostomski/'+project+'.git'
@@ -9,6 +9,7 @@ def gitCredentials ='jenkins-bitbucket-ssh'
 def file_extension= '.txt'
 def already_released_version=false
 def force_release = false
+def nexus_url = 'https://nexus.cloudbestenv.com:8443/'
 
 node('local-docker') {
     def app
@@ -60,9 +61,10 @@ node('local-docker') {
             sh 'ls -la'
             sh 'cd contrib/build-linux/appimage && ./build.sh'
         }
-        tag = sh(script: "git describe --tags ,",returnStdout:true,).trim()
+        tag = sh(script: "git describe --tags",returnStdout:true,).trim()
 
-        nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
+        //nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
+        nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "contrib/build-linux/README.md", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${version}"
         //add information about git
         sh "echo $project,$version,$branch,$shortCommit > $project-$branch-latest.txt"
         sh "echo $project,$version,$branch,$shortCommit"
