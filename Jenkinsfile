@@ -1,3 +1,5 @@
+properties([parameters([booleanParam(defaultValue: true, description: 'do not check last commit', name: 'force_release'),string(defaultValue: '0.0.1', description: 'release version', name: 'version', trim: false), string(defaultValue: 'master', description: 'branch for releases', name: 'branch', trim: false)])])
+
 def last_commitid = ''
 def project = 'electrum-vault'
 def project_type = 'python'
