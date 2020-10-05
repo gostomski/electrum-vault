@@ -1,6 +1,3 @@
-properties([parameters([booleanParam(defaultValue: true, description: 'do not check last commit', name: 'force_release'),string(defaultValue: '0.0.1', description: 'release version', name: 'version', trim: false), string(defaultValue: 'master', description: 'branch for releases', name: 'branch', trim: false)])])
-
-def last_commitid = ''
 def project = 'electrum-vault'
 def project_type = 'python'
 def project_ext = 'bin'
@@ -19,34 +16,9 @@ node('local-docker') {
 
     stage('Clone repository') {
         /* Let's make sure we have the repository cloned to our workspace */
-        sh 'echo $BRANCH_NAME'
-        echo BRANCH_NAME
         git url: GitUrl, branch: git_branch, credentialsId: gitCredentials
     }
 
-    stage('Check last commit'){
-      shortCommit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%H'").trim()
-      echo shortCommit
-      //get recently release commit id
-      if (force_release == 'false'){
-        sh "wget --no-check-certificate https://${nexus_url}/repository/miningcityv2/Global/$project-$prefix_branch/$version/$project-$prefix_branch-$version$file_extension -O version.txt"
-        last_commitid = sh(script: "cat version.txt | cut -f 4 -d ,",returnStdout:true,).trim()
-        echo "Compare latest released commit $last_commitid to current commit id $shortCommit is ok"
-        if (last_commitid != shortCommit){
-           force_release = 'true'
-           echo "FORCING RELEASE"
-        }
-        else {
-            art_version = sh(script: "cat version.txt | cut -f 2 -d ,",returnStdout:true,).trim()
-            already_released_version = true
-        }
-      }
-    }
-    if(already_released_version==true) {
-       currentBuild.result = 'SUCCESS'
-       echo "this commit was already released - use force release if you want to release"
-     return
-    }
 
     stage('Build image') {
         /* This builds the actual image; synonymous to
@@ -55,7 +27,7 @@ node('local-docker') {
         app = docker.build("electrum-appimage-builder-cont","./contrib/build-linux/appimage")
     }
 
-    stage('Build binary') {
+    stage('Release binary') {
          withEnv(["GIT_COMMITTER_NAME=test", "GIT_COMMITTER_EMAIL=test"]) {
    
         /* Ideally, we would run a test framework against our image.
@@ -65,7 +37,6 @@ node('local-docker') {
             sh 'cd contrib/build-linux/appimage && ./build.sh'
         }
         tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()      
-        //echo prefix_branch
         nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
         
 
