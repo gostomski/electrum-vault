@@ -33,7 +33,7 @@ node('local-docker') {
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
-        app.inside("-v $PWD:/opt/wine64/drive_c/electrum") {
+        app.inside("-u 0 -v $PWD:/opt/wine64/drive_c/electrum") {
             sh 'whoami && chown -R jenkins:jenkins /home/$USER/.wine && cd contrib/build-wine && ./build.sh  && ls -la '
         }
         tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()      
