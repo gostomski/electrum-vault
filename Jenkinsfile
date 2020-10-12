@@ -33,7 +33,7 @@
             /* Ideally, we would run a test framework against our image.
              * For this example, we're using a Volkswagen-type approach ;-) */
 
-            app.inside("-u 0 -v $PWD:/opt/wine64/drive_c/electrum") {
+            app.inside("-u 0 -v $PWD:/opt/wine64/drive_c/electrum -w /opt/wine64/drive_c/electrum/contrib/build-wine") {
                 sh 'printenv'
                 sh 'cd contrib/build-wine && ./build.sh'
             }
