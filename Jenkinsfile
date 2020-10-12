@@ -34,9 +34,12 @@
             /* Ideally, we would run a test framework against our image.
              * For this example, we're using a Volkswagen-type approach ;-) */
 
+            sh 'pwd'
             app.withRun("-u 0 -v $PWD:/opt/wine64/drive_c/electrum") {
                 //sh 'cd /opt/wine64/drive_c/ && ls -la && cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la'
                 sh 'printenv'
+                sh 'pwd'
+                sh 'ls -l /opt/wine64/drive_c/electrum'
             }
             tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()      
             nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}.exe", type: "exe"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
