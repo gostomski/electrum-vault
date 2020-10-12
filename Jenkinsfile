@@ -20,6 +20,33 @@ node('local-docker') {
         git url: GitUrl, branch: git_branch, credentialsId: gitCredentials
     }
 
+
+    stage('Build linux image') {
+        /* This builds the actual image; synonymous to
+         * docker build on the command line */
+
+        docker_linux = docker.build("electrum-appimage-builder-cont","./contrib/build-linux/appimage")
+    }
+
+    stage('Release binary linux') {
+        withEnv(["GIT_COMMITTER_NAME=test", "GIT_COMMITTER_EMAIL=test"]) {
+   
+            /* Ideally, we would run a test framework against our image.
+             * For this example, we're using a Volkswagen-type approach ;-) */
+            docker_linux.inside {
+                sh 'cd contrib/build-linux/appimage && ./build.sh'
+            }
+            tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()       
+            nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
+            
+
+            //add information about git
+            sh "echo $project,$tag,$prefix_branch,$shortCommit > $project-$prefix_branch-latest.txt"
+            nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "${project}-${prefix_branch}-latest.txt", type: "txt"]], credentialsId: 'jenkins-rw-nexus', groupId: 'Global', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
+            cleanWs();
+        }
+    }
+
     stage('Build image wine') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
@@ -36,6 +63,9 @@ node('local-docker') {
         pwd = sh(script: "pwd",returnStdout:true,).trim()
         sh 'pwd'
         sh 'docker run --rm -t -u 0 -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/bin/docker -w /opt/wine64/drive_c/electrum/contrib/build-wine -v $(pwd):/opt/wine64/drive_c/electrum:rw electrum-wine-builder-img ./build.sh'
+        sh 'pwd'
+        sh 'ls -la'
+        sh 'ls -la dist/'
 
         tag = sh(script: "git describe --tags --abbrev=9 --dirty --always",returnStdout:true,).trim()      
         nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}.exe", type: "exe"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
