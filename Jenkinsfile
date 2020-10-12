@@ -34,8 +34,8 @@
              * For this example, we're using a Volkswagen-type approach ;-) */
 
             app.inside("-u 0 -v $PWD:/opt/wine64/drive_c/electrum") {
+                sh 'cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la'
                 sh 'printenv'
-                sh 'cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la && ./build.sh'
             }
             tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()      
             nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}.exe", type: "exe"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
