@@ -35,7 +35,7 @@
              * For this example, we're using a Volkswagen-type approach ;-) */
 
             pwd = sh(script: "pwd",returnStdout:true,).trim()
-            sh 'docker run --rm -it -u 0 -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/bin/docker -w /opt/wine64/drive_c/electrum/contrib/build-wine -v /home/jenkins/workspace/workspace/lectrum-vault-multi_feature_test:/opt/wine64/drive_c/electrum:rw electrum-wine-builder-img ls -la /opt/wine64/drive_c/electrum'
+            sh 'docker run --rm -t -u 0 -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/bin/docker -w /opt/wine64/drive_c/electrum/contrib/build-wine -v /home/jenkins/workspace/workspace/lectrum-vault-multi_feature_test:/opt/wine64/drive_c/electrum:rw electrum-wine-builder-img ls -la /opt/wine64/drive_c/electrum'
 /*            app.withRun("-u 0 -v ${pwd}:/opt/wine64/drive_c/electrum") {
                 //sh 'cd /opt/wine64/drive_c/ && ls -la && cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la'
                 sh 'printenv'
