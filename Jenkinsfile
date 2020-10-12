@@ -61,6 +61,7 @@ node('local-docker') {
          * For this example, we're using a Volkswagen-type approach ;-) */
 
         pwd = sh(script: "pwd",returnStdout:true,).trim()
+        sh 'pwd'
         sh 'docker run --rm -t -u 0 -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/bin/docker -w /opt/wine64/drive_c/electrum/contrib/build-wine -v $(pwd):/opt/wine64/drive_c/electrum:rw electrum-wine-builder-img ./build.sh'
 
         tag = sh(script: "git describe --tags --abbrev=9 --dirty --always",returnStdout:true,).trim()      
