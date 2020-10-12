@@ -23,7 +23,7 @@ node('local-docker') {
     stage('Build image wine') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
-        sh 'chown -R jenkins ./contrib/build-wine'
+        sh 'sudo chown -R jenkins ./contrib/build-wine'
         sh 'ls -la ./contrib/build-wine'
         docker_wine = docker.build("electrum-wine-builder-img","./contrib/build-wine")
     }
