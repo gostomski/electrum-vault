@@ -34,6 +34,7 @@
              * For this example, we're using a Volkswagen-type approach ;-) */
 
             app.inside("-u 0 -v $PWD:/opt/wine64/drive_c/electrum") {
+                sh 'printenv'
                 sh 'cd contrib/build-wine && ./build.sh'
             }
             tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()      
