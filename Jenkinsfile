@@ -20,20 +20,11 @@ node('local-docker') {
         git url: GitUrl, branch: git_branch, credentialsId: gitCredentials
     }
 
-    stage('Build linux image') {
-        /* This builds the actual image; synonymous to
-         * docker build on the command line */
-
-        docker_linux = docker.build("electrum-appimage-builder-cont","./contrib/build-linux/appimage")
-    }
-
-
     stage('Build image wine') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
 
         docker_wine = docker.build("electrum-wine-builder-img","./contrib/build-wine")
     }
-
 
 }
