@@ -28,28 +28,11 @@ node('local-docker') {
         docker_linux = docker.build("electrum-appimage-builder-cont","./contrib/build-linux/appimage")
     }
 
-    stage('Release binary linux') {
-        withEnv(["GIT_COMMITTER_NAME=test", "GIT_COMMITTER_EMAIL=test"]) {
-   
-            /* Ideally, we would run a test framework against our image.
-             * For this example, we're using a Volkswagen-type approach ;-) */
-            docker_linux.inside {
-                sh 'cd contrib/build-linux/appimage && ./build.sh'
-            }
-            tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()       
-            nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
-            
-
-            //add information about git
-            sh "echo $project,$tag,$prefix_branch,$shortCommit > $project-$prefix_branch-latest.txt"
-            nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "${project}-${prefix_branch}-latest.txt", type: "txt"]], credentialsId: 'jenkins-rw-nexus', groupId: 'Global', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
-            cleanWs();
-        }
-    }
 
     stage('Build image wine') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
+        sh 'pwd'
         sh 'sudo chown -R jenkins ./contrib/build-wine'
         docker_wine = docker.build("electrum-wine-builder-img","./contrib/build-wine")
     }
