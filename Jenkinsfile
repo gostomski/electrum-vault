@@ -17,6 +17,7 @@
         stage('Clone repository') {
             /* Let's make sure we have the repository cloned to our workspace */
             git url: GitUrl, branch: git_branch, credentialsId: gitCredentials
+            sh 'pwd'
         }
 
 
@@ -34,7 +35,7 @@
              * For this example, we're using a Volkswagen-type approach ;-) */
 
             app.withRun("-u 0 -v $PWD:/opt/wine64/drive_c/electrum") {
-                sh 'cd /opt/wine64/drive_c/ && ls -la && cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la'
+                //sh 'cd /opt/wine64/drive_c/ && ls -la && cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la'
                 sh 'printenv'
             }
             tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()      
