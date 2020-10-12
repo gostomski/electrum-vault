@@ -12,7 +12,8 @@ def force_release = false
 def nexus_url = 'nexus.cloudbestenv.com:8443'
 
 node('local-docker') {
-    def app
+    def docker_linux
+    def docker_wine
 
     stage('Clone repository') {
         /* Let's make sure we have the repository cloned to our workspace */
@@ -20,38 +21,11 @@ node('local-docker') {
     }
 
 
-    // stage('Build image') {
-    //     /* This builds the actual image; synonymous to
-    //      * docker build on the command line */
-
-    //     app = docker.build("electrum-appimage-builder-cont","./contrib/build-linux/appimage")
-    // }
-
-    // stage('Release binary linux') {
-    //      withEnv(["GIT_COMMITTER_NAME=test", "GIT_COMMITTER_EMAIL=test"]) {
-   
-    //     /* Ideally, we would run a test framework against our image.
-    //      * For this example, we're using a Volkswagen-type approach ;-) */
-
-    //     app.inside {
-    //         sh 'cd contrib/build-linux/appimage && ./build.sh'
-    //     }
-    //     tag = sh(script: "git describe --tags --abbrev=7 --dirty --always",returnStdout:true,).trim()       
-    //     nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-x86_64.AppImage", type: "${project_ext}"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
-        
-
-    //     //add information about git
-    //     sh "echo $project,$tag,$prefix_branch,$shortCommit > $project-$prefix_branch-latest.txt"
-    //    nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "${project}-${prefix_branch}-latest.txt", type: "txt"]], credentialsId: 'jenkins-rw-nexus', groupId: 'Global', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
-    //  cleanWs();
-    //  }
-    // }
-
     stage('Build image wine') {
         /* This builds the actual image; synonymous to
          * docker build on the command line */
 
-        app = docker.build("electrum-wine-builder-img","./contrib/build-wine")
+        docker_wine = docker.build("electrum-wine-builder-img","./contrib/build-wine")
     }
 
     stage('Release binary wine') {
