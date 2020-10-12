@@ -34,8 +34,8 @@
             /* Ideally, we would run a test framework against our image.
              * For this example, we're using a Volkswagen-type approach ;-) */
 
-            sh 'pwd'
-            app.withRun("-u 0 -v $PWD:/opt/wine64/drive_c/electrum") {
+            pwd = sh(script: "pwd",returnStdout:true,).trim()      
+            app.withRun("-u 0 -v ${pwd}:/opt/wine64/drive_c/electrum") {
                 //sh 'cd /opt/wine64/drive_c/ && ls -la && cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la'
                 sh 'printenv'
                 sh 'pwd'
