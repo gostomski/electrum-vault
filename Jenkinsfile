@@ -34,8 +34,9 @@
             /* Ideally, we would run a test framework against our image.
              * For this example, we're using a Volkswagen-type approach ;-) */
 
-            pwd = sh(script: "pwd",returnStdout:true,).trim()      
-            app.withRun("-u 0 -v ${pwd}:/opt/wine64/drive_c/electrum") {
+            pwd = sh(script: "pwd",returnStdout:true,).trim()
+            docker run -t -d -u 0 -w /opt/wine64/drive_c/electrum -v /home/jenkins/workspace/workspace/lectrum-vault-multi_feature_test:/opt/wine64/drive_c/electrum:rw electrum-wine-builder-img ls -la /opt/wine64/drive_c/electrum
+/*            app.withRun("-u 0 -v ${pwd}:/opt/wine64/drive_c/electrum") {
                 //sh 'cd /opt/wine64/drive_c/ && ls -la && cd /opt/wine64/drive_c/electrum/contrib/build-wine && ls -la'
                 sh 'printenv'
                 sh 'pwd'
@@ -45,7 +46,7 @@
             nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}.exe", type: "exe"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
             nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-portable.exe", type: "exe"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
             nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}-setup.exe", type: "exe"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
-            
+*/            
 
             //add information about git
             sh "echo $project,$tag,$prefix_branch,$shortCommit > $project-$prefix_branch-latest.txt"
