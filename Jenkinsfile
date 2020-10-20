@@ -23,6 +23,7 @@ node('mac-jenkins') {
 
 
     stage('build macos binary') {
+        withEnv(["PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"]){
         sh '''
             #sudo xcode-select -s $HOME/Downloads/Xcode.app/Contents/Developer/
             git submodule update --init
@@ -32,6 +33,7 @@ node('mac-jenkins') {
             ./contrib/osx/make_osx
             find dist/             
            '''
+        }
     }
 
     stage('Release binary wine') {
