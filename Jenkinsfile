@@ -29,7 +29,6 @@ node('mac-jenkins') {
             find contrib/osx/
             pushd contrib/osx/CalinsQRReader; xcodebuild; popd
             cp -r contrib/osx/CalinsQRReader/build prebuilt_qr
-            cd electrum
             ./contrib/osx/make_osx
            '''
     }
