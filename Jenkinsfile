@@ -31,7 +31,7 @@ node('mac-jenkins') {
             pushd contrib/osx/CalinsQRReader; xcodebuild; popd
             cp -r contrib/osx/CalinsQRReader/build prebuilt_qr
             ./contrib/osx/make_osx
-            find dist/             
+            find dist/
            '''
         }
     }
