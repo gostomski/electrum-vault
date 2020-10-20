@@ -24,9 +24,10 @@ node('mac-jenkins') {
 
     stage('build macos binary') {
         sh '''
-            sudo xcode-select -s $HOME/Downloads/Xcode.app/Contents/Developer/
-            #pushd contrib/osx/CalinsQRReader; xcodebuild; popd
-            #cp -r contrib/osx/CalinsQRReader/build prebuilt_qr
+            #sudo xcode-select -s $HOME/Downloads/Xcode.app/Contents/Developer/
+            find contrib/osx/
+            pushd contrib/osx/CalinsQRReader; xcodebuild; popd
+            cp -r contrib/osx/CalinsQRReader/build prebuilt_qr
             cd electrum
             ./contrib/osx/make_osx
            '''
