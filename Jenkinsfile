@@ -100,14 +100,13 @@ node('mac-jenkins') {
         }
     }
 
-    stage('Release binary wine') {
-        withEnv(["GIT_COMMITTER_NAME=test", "GIT_COMMITTER_EMAIL=test","PYTHONIOENCODING=UTF-8","LC_ALL=C.UTF-8", "LANG=C.UTF-8"]) {
+    stage('Upload macos binary') {
+        withEnv(["GIT_COMMITTER_NAME=Jenkins", "GIT_COMMITTER_EMAIL=jenkins@minebest.com"]) {
    
         /* Ideally, we would run a test framework against our image.
          * For this example, we're using a Volkswagen-type approach ;-) */
 
         pwd = sh(script: "pwd",returnStdout:true,).trim()
-        sh 'pwd'
         tag = sh(script: "git describe --tags --abbrev=9 --dirty --always",returnStdout:true,).trim()
         nexusArtifactUploader artifacts: [[artifactId: "${project}-${project_type}", classifier: '', file: "dist/electrum-${tag}.dmg", type: "dmg"]], credentialsId: 'jenkins-rw-nexus', groupId: '', nexusUrl: "${nexus_url}", nexusVersion: 'nexus3', protocol: 'https', repository: 'miningcityv2', version: "${tag}"
         
