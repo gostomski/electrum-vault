@@ -25,6 +25,7 @@ node('mac-jenkins') {
     stage('build macos binary') {
         sh '''
             #sudo xcode-select -s $HOME/Downloads/Xcode.app/Contents/Developer/
+            git submodule update --init
             find contrib/osx/
             pushd contrib/osx/CalinsQRReader; xcodebuild; popd
             cp -r contrib/osx/CalinsQRReader/build prebuilt_qr
