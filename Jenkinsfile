@@ -27,7 +27,7 @@ node('mac-jenkins') {
             find contrib/osx/
             pushd contrib/osx/CalinsQRReader; xcodebuild; popd
             cp -r contrib/osx/CalinsQRReader/build prebuilt_qr
-            ./contrib/osx/make_osx
+            ./contrib/osx/make_osx admin@minebest.com
            '''
         }
     }
